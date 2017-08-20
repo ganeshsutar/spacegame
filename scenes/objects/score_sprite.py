@@ -1,23 +1,24 @@
 """
-Text Sprite
+Score Sprite
 """
 
 import pygame
 
-class TextSprite(pygame.sprite.Sprite):
-    def __init__(self, text, font, color):
+class ScoreSprite(pygame.sprite.Sprite):
+    def __init__(self, score, font, color, prefix = 'Score: '):
         pygame.sprite.Sprite.__init__(self)
-        self.text = text
+        self.score = score
+        self.prefix = prefix + ' %d'
         self.font = font
         self.color = color
         self.updateImage()
 
     def updateImage(self):
-        self.image = self.font.render(self.text, True, self.color)
+        self.image = self.font.render(self.prefix % (self.score), False, self.color)
         self.rect = self.image.get_rect()
     
-    def setText(self, text):
-        self.text = text
+    def setPrefix(self, prefix):
+        self.prefix = prefix + ' %d'
         self.updateImage()
     
     def setFont(self, font):
@@ -26,5 +27,9 @@ class TextSprite(pygame.sprite.Sprite):
     
     def setColor(self, color):
         self.color = color
+        self.updateImage()
+
+    def setScore(self, score):
+        self.score = score
         self.updateImage()
 

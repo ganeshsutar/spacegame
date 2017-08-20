@@ -6,8 +6,11 @@ class BaseScene:
     def __init__(self):
         pass
     
+    def draw(self, tickEvent):
+        pass
+
     def update(self, tickEvent):
         pass
-    
-    def draw(self, tickEvent):
+
+    def handleEvent(self, event):
         pass
