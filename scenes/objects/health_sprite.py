@@ -18,7 +18,11 @@ class HealthBarSprite(pygame.sprite.Sprite):
         self.health = health
         self.font = pygame.font.Font(fontFile, 10)
         self.updateImage()
-    
+
+    def setHealth(self, health):
+        self.health = health
+        self.updateImage()
+
     def updateImage(self):
         self.image = pygame.Surface(self.imageSize, pygame.SRCALPHA, 32).convert_alpha()
         width = int(self.imageSize[0]/100)
@@ -37,6 +41,3 @@ class HealthBarSprite(pygame.sprite.Sprite):
 
         if self.imageFlip:
             self.image = pygame.transform.flip(self.image, True, False)
-
-
-
