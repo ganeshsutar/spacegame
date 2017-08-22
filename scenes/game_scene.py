@@ -30,7 +30,7 @@ class GameScene(BaseScene):
         self.backgroundSprites.add(self.backgroundSprite)
 
         # Add Life Bar
-        self.life = objects.LifeSprite(3, './assets/spaceArt/life.png')
+        self.life = objects.LifeSprite(3, './assets/spaceArt/png/life.png')
         self.life.rect.topleft = (10,10)
         self.visualSprites.add(self.life)
 

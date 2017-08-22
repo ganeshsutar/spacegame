@@ -3,9 +3,9 @@ Laser
 """
 
 import pygame
-import pygame.math
+import vector 
 
-vec = pygame.math.Vector2
+vec = vector.Vec2d
 
 laserImage = './assets/redux/PNG/Lasers/laserBlue01.png'
 

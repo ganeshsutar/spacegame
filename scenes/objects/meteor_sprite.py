@@ -3,9 +3,9 @@ Meteor
 """
 
 import pygame
-import pygame.math
+import vector
 
-vec = pygame.math.Vector2
+vec = vector.Vec2d
 
 # meteorTypes = ['big1', 'big2', 'big3', 'big4', 'med1', 'med2', 'small1', 'small2', 'tiny1', 'tiny2']
 # meteorColors = ['Brown', 'Grey']

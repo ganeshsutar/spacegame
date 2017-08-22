@@ -2,13 +2,15 @@
 Main Player
 """
 import pygame
-import pygame.math
+import vector
 from laser import Laser
 
 PLAYER_ACC = 0.6
 PLAYER_FRICTION = 0.12
 PLAYER_FIRE_RATE = 100
 FPS = 60.0
+
+vec = vector.Vec2d
 
 class PlayerAssets:
     def __init__(self, i, color):
@@ -46,9 +48,9 @@ class PlayerSprite(pygame.sprite.Sprite):
 
         self.playerAssets = playerAssets[self.player]
 
-        self.pos = pygame.math.Vector2(0, 0)
-        self.vel = pygame.math.Vector2(0, 0)
-        self.acc = pygame.math.Vector2(0, 0)
+        self.pos = vec(0, 0)
+        self.vel = vec(0, 0)
+        self.acc = vec(0, 0)
     
         self.updateImage()
         self.setCenter()
@@ -65,7 +67,7 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.lastFire = pygame.time.get_ticks()
 
     def update(self):
-        self.acc = pygame.math.Vector2(0,0)
+        self.acc = vec(0,0)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.acc.x = -PLAYER_ACC
@@ -127,5 +129,5 @@ class PlayerSprite(pygame.sprite.Sprite):
     def setCenter(self):
         screenSize = pygame.display.get_surface().get_size()
         imageSize = self.image.get_size()
-        self.pos = pygame.math.Vector2(screenSize[0]/2, screenSize[1]-imageSize[1]/2)
+        self.pos = vec(screenSize[0]/2, screenSize[1]-imageSize[1]/2)
         self.rect.center = self.pos
