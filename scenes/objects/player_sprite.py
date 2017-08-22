@@ -2,51 +2,121 @@
 Main Player
 """
 import pygame
+import pygame.math
+from laser import Laser
 
-idleImage = './assets/spaceArt/player.png'
-leftImage = './assets/spaceArt/playerLeft.png'
-rightImage = './assets/spaceArt/playerRight.png'
-damagedImage = './assets/spaceArt/playerDamaged.png'
-shieldImage = './assets/spaceArt/shield.png'
+PLAYER_ACC = 0.6
+PLAYER_FRICTION = 0.12
+PLAYER_FIRE_RATE = 100
+FPS = 60.0
 
+class PlayerAssets:
+    def __init__(self, i, color):
+        self.playerAssets = './assets/redux/PNG/playerShip%d_%s.png' % (i, color)
+        self.damagesAssets = [ './assets/redux/PNG/Damage/playerShip%d_damage%d.png' % (i, j) for j in range(1,3)]
+        self.laserSound = './assets/redux/Bonus/sfx_laser1.ogg'
+        self.loaded = False
+    
+    def load(self):
+        self.player = pygame.image.load(self.playerAssets).convert_alpha()
+        self.damages = [pygame.image.load(x).convert_alpha() for x in self.damagesAssets]
+        self.fireSound = pygame.mixer.Sound(self.laserSound)
+
+playerAssets = [PlayerAssets(i, color) for i in range(1,4) for color in ['blue', 'green', 'orange', 'red']]
+shieldAssets = ['./assets/redux/PNG/Effects/shield%d.png' % i for i in range(1,4)]
+shields = []
 
 class PlayerSprite(pygame.sprite.Sprite):
-    def __init__(self, hasShield = True):
+    def __init__(self, player, damage, shield, collideSprite):
         pygame.sprite.Sprite.__init__(self)
+        self.player = player
+        self.damage = damage
+        self.shield = shield
+        self.lastFire = pygame.time.get_ticks()
+        self.collideSprite = collideSprite
         self.playerRectSize = (150,150)
-        self.state = 'IDLE'
-        self.hasShield = hasShield
+        self.image = pygame.Surface(self.playerRectSize, pygame.SRCALPHA, 32).convert_alpha()
+        self.rect = self.image.get_rect()
 
-        self.idle = pygame.image.load(idleImage).convert_alpha()
-        self.left = pygame.image.load(leftImage).convert_alpha()
-        self.right = pygame.image.load(rightImage).convert_alpha()
-        self.damaged = pygame.image.load(damagedImage).convert_alpha()
-        self.shield = pygame.image.load(shieldImage).convert_alpha()
-        self.rect = pygame.Rect(0,0,0,0)
+        for playerAsset in playerAssets:
+            playerAsset.load()
+        
+        for shieldImage in shieldAssets:
+            shields.append(pygame.image.load(shieldImage).convert_alpha())
 
+        self.playerAssets = playerAssets[self.player]
+
+        self.pos = pygame.math.Vector2(0, 0)
+        self.vel = pygame.math.Vector2(0, 0)
+        self.acc = pygame.math.Vector2(0, 0)
+    
         self.updateImage()
         self.setCenter()
     
-    def setState(self, newState):
-        self.state = newState
-        self.updateImage()
+    def fire(self):
+        currentTime = pygame.time.get_ticks()
+        if (currentTime - self.lastFire) < PLAYER_FIRE_RATE:
+            return
+        laserLeft = Laser((self.pos.x-20, self.pos.y-20), (0, -10))
+        laserRight = Laser((self.pos.x+20, self.pos.y-20), (0, -10))
+        self.collideSprite.add(laserLeft)
+        self.collideSprite.add(laserRight)
+        self.playerAssets.fireSound.play()
+        self.lastFire = pygame.time.get_ticks()
+
+    def update(self):
+        self.acc = pygame.math.Vector2(0,0)
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.acc.x = -PLAYER_ACC
+        if keys[pygame.K_RIGHT]:
+            self.acc.x = PLAYER_ACC
+        if keys[pygame.K_UP]:
+            self.acc.y = -PLAYER_ACC
+        if keys[pygame.K_DOWN]:
+            self.acc.y = PLAYER_ACC
+        if keys[pygame.K_b]:
+            # print('Total Sprites: %d' % (len(self.collideSprite)))
+            self.fire()
+            
+        self.acc += self.vel * (-PLAYER_FRICTION)
+        self.vel += self.acc
+        self.pos += (self.vel + 0.5 * self.acc)
+        # print(self.acc, self.vel, self.pos)
+
+        screenSize = pygame.display.get_surface().get_size()
+        if self.pos.x < 0: self.pos.x = 0
+        if self.pos.x > screenSize[0]: self.pos.x = screenSize[0]
+        if self.pos.y < 0: self.pos.y = 0
+        if self.pos.y > screenSize[1]: self.pos.y = screenSize[1]
+        
+        self.rect.center = self.pos
+
     
     def updateImage(self):
-        topleft = self.rect.topleft
-        self.image = pygame.Surface(self.playerRectSize, pygame.SRCALPHA, 32).convert_alpha()
-        self.rect = self.image.get_rect()
-        self.rect.topleft = topleft
-        if self.state == 'IDLE':
-            self.blitAtCenter(self.idle, 20)
-        elif self.state == 'LEFT':
-            self.blitAtCenter(self.left, 20)
-        elif self.state == 'RIGHT':
-            self.blitAtCenter(self.right, 20)
-        elif self.state == 'DAMAGED':
-            self.blitAtCenter(self.damaged, 20)
+        self.image.fill((0,0,0,0))
+        self.blitAtCenter(self.playerAssets.player, 20)
+
+        if self.damage != -1:
+            self.blitAtCenter(self.playerAssets.damages[self.damage], 20)
         
-        if self.hasShield:
-            self.blitAtCenter(self.shield)
+        if self.shield != -1:
+            self.blitAtCenter(shields[self.shield])
+        
+    def updatePlayer(self, player):
+        if 0 < player < len(playerAssets):
+            self.player = player
+            self.updateImage()
+    
+    def updateDamage(self, damage):
+        if 0 < damage < 4:
+            self.damage = damage
+            self.updateImage()
+    
+    def updateShield(self, shield):
+        if 0 < shield < 3:
+            self.shield = shield
+            self.updateImage()
 
     def blitAtCenter(self, drawImage, yOffset = 0):
         baseSize = self.image.get_size()
@@ -57,4 +127,5 @@ class PlayerSprite(pygame.sprite.Sprite):
     def setCenter(self):
         screenSize = pygame.display.get_surface().get_size()
         imageSize = self.image.get_size()
-        self.rect.topleft = (screenSize[0]/2-imageSize[0]/2, screenSize[1]-imageSize[1])
+        self.pos = pygame.math.Vector2(screenSize[0]/2, screenSize[1]-imageSize[1]/2)
+        self.rect.center = self.pos

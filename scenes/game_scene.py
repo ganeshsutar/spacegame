@@ -4,8 +4,19 @@ Main Game scene
 
 import pygame
 import objects
+import random
 from base_scene import BaseScene
 from pygame.locals import *
+
+meteorTypes = ['big1', 'big2', 'big3', 'big4', 'med1', 'med2', 'small1', 'small2', 'tiny1', 'tiny2']
+meteorColors = ['Brown', 'Grey']
+
+METEOR_RATE = 500
+
+def sign(x):
+    if x < 0:
+        return -1
+    return 1
 
 class GameScene(BaseScene):
     def __init__(self):
@@ -15,7 +26,7 @@ class GameScene(BaseScene):
         self.collideSprites = pygame.sprite.RenderPlain()
 
         # Background Sprite
-        self.backgroundSprite = objects.BackgroundSprite(image='./assets/spaceArt/Background/starBackground.png')
+        self.backgroundSprite = objects.BackgroundSprite(image='./assets/redux/Backgrounds/blue.png')
         self.backgroundSprites.add(self.backgroundSprite)
 
         # Add Life Bar
@@ -24,24 +35,24 @@ class GameScene(BaseScene):
         self.visualSprites.add(self.life)
 
         # Add Score
-        scoreFont = pygame.font.SysFont('Consolas', 12)
-        self.score = objects.ScoreSprite(0, scoreFont, (180, 180, 180))
-        self.score.rect.topleft = (self.screenSize[0]-100, 10)
+        self.score = objects.ScoreSprite(99999)
         self.visualSprites.add(self.score)
 
         # Player
-        self.player = objects.PlayerSprite()
+        self.player = objects.PlayerSprite(0,1,1, self.collideSprites)
         self.collideSprites.add(self.player)
 
         # Health
-        self.health = objects.HealthBarSprite((300,15))
-        self.health.rect.topleft = (10, self.screenSize[1]-25)
+        self.health = objects.HealthBarSprite((300,15), 'HEALTH', color=(200, 100, 150, 150))
+        self.health.rect.topleft = (10, self.screenSize[1]-50)
         self.visualSprites.add(self.health)
 
         # Shield
-        self.shield = objects.HealthBarSprite((300, 15), 90, color=(255, 190, 190), flip=True)
-        self.shield.rect.topleft = (self.screenSize[0] - 310, self.screenSize[1]-25)
+        self.shield = objects.HealthBarSprite((300, 15), 'SHIELD', 100, color=(255, 200, 50, 150), flip=True)
+        self.shield.rect.topleft = (self.screenSize[0] - 310, self.screenSize[1]-50)
         self.visualSprites.add(self.shield)
+
+        self.lastMeteorAdded = pygame.time.get_ticks()
     
     def draw(self, timeDelta):
         screen = pygame.display.get_surface()
@@ -50,21 +61,22 @@ class GameScene(BaseScene):
         self.visualSprites.draw(screen)
     
     def update(self, timeDelta):
-        pass
+        self.collideSprites.update()
+        self.addMeteor()
     
-    def handleEvent(self, event):
-        if event.type == pygame.KEYDOWN:
-            self.handleKeyboard(event)
-    
-    def handleKeyboard(self, event):
-        if event.key == K_LEFT:
-            self.player.setState('LEFT')
-        elif event.key == K_RIGHT:
-            self.player.setState('RIGHT')
-        elif event.key == K_UP:
-            self.player.setState('IDLE')
-        elif event.key == K_DOWN:
-            self.player.setState('DAMAGED')
-        elif event.key == K_q:
-            self.life.reduceCount()
+    def addMeteor(self):
+        screenSize = pygame.display.get_surface().get_size()
+        if pygame.time.get_ticks() - self.lastMeteorAdded < METEOR_RATE:
+            return
+        
+        pos = (random.randint(-200, screenSize[1]+200), random.randint(-200, -100))
+        vel = (sign(screenSize[0]-pos[0]) * (random.randint(0, 5)), random.randint(0, 10))
+        # pos = (100, 100)
+        # vel = (0, 5)
+        type = random.sample(meteorTypes, 1)[0]
+        color = random.sample(meteorColors, 1)[0]
+        meteor = objects.Meteor(type, color, pos, vel)
+        self.collideSprites.add(meteor)
+        # print(type, color, pos, vel)
+        self.lastMeteorAdded = pygame.time.get_ticks()
 

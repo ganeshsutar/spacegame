@@ -21,5 +21,4 @@ class Configuration:
     
     def getScreenSize(self):
         return (self.width, self.height)
-
     

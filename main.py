@@ -10,6 +10,7 @@ def main():
     screen = pygame.display.set_mode(config.getScreenSize())
     pygame.display.set_caption('Space JAM')
     pygame.font.init()
+    pygame.mixer.init()
     clock = pygame.time.Clock()
     scene = GameScene()
     sceneManager.push(scene)
@@ -17,6 +18,7 @@ def main():
     keepGoing = True
     while keepGoing:
         timeDelta = clock.tick(config.fpsLimit)
+        # print('timeDelta: %d, FPS: %d' % (timeDelta, clock.get_fps()))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 keepGoing = False
