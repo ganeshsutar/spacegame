@@ -12,6 +12,12 @@ meteorTypes = ['big1', 'big2', 'big3', 'big4', 'med1', 'med2', 'small1', 'small2
 meteorColors = ['Brown', 'Grey']
 
 METEOR_RATE = 500
+SIZES = {
+    'big' : (80,80),
+    'med' : (50,50),
+    'small' : (30,30),
+    'tiny' : (15,15)
+}
 
 def sign(x):
     if x < 0:
@@ -91,7 +97,7 @@ class GameScene(BaseScene):
         collidedSprites = pygame.sprite.groupcollide(self.meteorSprites, self.bulletSprites, True, True, pygame.sprite.collide_circle)
         for key, value in collidedSprites.iteritems():
             pos = findCollidePoint(key, value[0])
-            pointSprite = objects.ExplosionSprite(pos)
+            pointSprite = objects.ExplosionSprite(key.pos, size=SIZES[key.type[:-1]], vel=key.vel)
             self.explosionSprites.add(pointSprite)
             add_score = 10 * len(value)
             self.score.addScore(add_score)
