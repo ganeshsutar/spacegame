@@ -1,11 +1,14 @@
 #! /usr/bin/python
 
+import os
 import util
 import pygame
 from scenes import sceneManager, TitleScene, GameScene
 
 def main():
     config = util.loadConfiguration('./config.ini')
+    os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (2,25)
+    #os.environ['SDL_VIDEO_CENTERED'] = '0'
     pygame.init()
     screen = pygame.display.set_mode(config.getScreenSize())
     pygame.display.set_caption('Space JAM')

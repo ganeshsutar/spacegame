@@ -19,15 +19,15 @@ class ScoreSprite(pygame.sprite.Sprite):
         imageSize = self.image.get_size()
         self.rect = self.image.get_rect()
         self.rect.topleft = (screenSize[0] - self.rect.width - 10, 10)
-    
+
     def setPrefix(self, prefix):
         self.prefix = prefix + ' %d'
         self.updateImage()
-    
+
     def setFont(self, font):
         self.font = font
         self.updateImage()
-    
+
     def setColor(self, color):
         self.color = color
         self.updateImage()
@@ -36,3 +36,6 @@ class ScoreSprite(pygame.sprite.Sprite):
         self.score = score
         self.updateImage()
 
+    def addScore(self, score):
+        self.score += score
+        self.updateImage()

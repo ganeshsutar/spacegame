@@ -6,3 +6,4 @@ from player_sprite import *
 from health_sprite import *
 from meteor_sprite import *
 from circle_sprite import *
+from explosion_sprite import *

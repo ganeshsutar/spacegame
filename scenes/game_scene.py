@@ -29,28 +29,29 @@ def findCollidePoint(sprite1, sprite2):
 class GameScene(BaseScene):
     def __init__(self):
         self.screenSize = pygame.display.get_surface().get_size()
-        self.visualSprites = pygame.sprite.RenderPlain()
         self.backgroundSprites = pygame.sprite.RenderPlain()
-        self.collideSprites = pygame.sprite.RenderPlain()
-        self.meteorSprites = pygame.sprite.Group()
-        self.collisionPoints = pygame.sprite.Group()
+        self.meteorSprites = pygame.sprite.RenderPlain()
+        self.playerSprites = pygame.sprite.RenderPlain()
+        self.bulletSprites = pygame.sprite.RenderPlain()
+        self.explosionSprites = pygame.sprite.RenderPlain()
+        self.visualSprites = pygame.sprite.RenderPlain()
 
         # Background Sprite
         self.backgroundSprite = objects.BackgroundSprite(image='./assets/redux/Backgrounds/blue.png')
         self.backgroundSprites.add(self.backgroundSprite)
 
         # Add Life Bar
-        self.life = objects.LifeSprite(3, './assets/spaceArt/png/life.png')
+        self.life = objects.LifeSprite(3, './assets/redux/PNG/UI/playerLife1_blue.png')
         self.life.rect.topleft = (10,10)
         self.visualSprites.add(self.life)
 
         # Add Score
-        self.score = objects.ScoreSprite(99999)
+        self.score = objects.ScoreSprite(0)
         self.visualSprites.add(self.score)
 
         # Player
-        self.player = objects.PlayerSprite(8,-1,1, self.collideSprites)
-        self.collideSprites.add(self.player)
+        self.player = objects.PlayerSprite(0,-1,1, self.bulletSprites)
+        self.playerSprites.add(self.player)
 
         # Health
         self.health = objects.HealthBarSprite((300,15), 'HEALTH', color=(200, 100, 150, 150))
@@ -63,29 +64,37 @@ class GameScene(BaseScene):
         self.visualSprites.add(self.shield)
 
         self.lastMeteorAdded = pygame.time.get_ticks()
+        objects.loadExplosionImages()
 
     def draw(self, timeDelta):
         screen = pygame.display.get_surface()
         self.backgroundSprites.draw(screen)
-        self.collideSprites.draw(screen)
-        self.collisionPoints.draw(screen)
+        self.meteorSprites.draw(screen)
+        self.playerSprites.draw(screen)
+        self.bulletSprites.draw(screen)
+        self.explosionSprites.draw(screen)
         self.visualSprites.draw(screen)
 
     def update(self, timeDelta):
-        self.collideSprites.update()
+        self.meteorSprites.update()
+        self.bulletSprites.update()
+        self.explosionSprites.update()
+        self.playerSprites.update()
         self.addMeteor()
         collidedSprites = pygame.sprite.spritecollide(self.player, self.meteorSprites, True, pygame.sprite.collide_circle)
         if len(collidedSprites) > 0:
             self.player.blinkShield()
             for sprite in collidedSprites:
                 pos = findCollidePoint(self.player, sprite)
-                pointSprite = objects.CircleSprite(pos, 5)
-                self.collisionPoints.add(pointSprite)
-
-    def handleEvent(self, event):
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
-            for sprite in self.collisionPoints:
-                sprite.kill()
+                pointSprite = objects.ExplosionSprite(pos)
+                self.explosionSprites.add(pointSprite)
+        collidedSprites = pygame.sprite.groupcollide(self.meteorSprites, self.bulletSprites, True, True, pygame.sprite.collide_circle)
+        for key, value in collidedSprites.iteritems():
+            pos = findCollidePoint(key, value[0])
+            pointSprite = objects.ExplosionSprite(pos)
+            self.explosionSprites.add(pointSprite)
+            add_score = 10 * len(value)
+            self.score.addScore(add_score)
 
     def addMeteor(self):
         screenSize = pygame.display.get_surface().get_size()
@@ -100,7 +109,6 @@ class GameScene(BaseScene):
         color = random.sample(meteorColors, 1)[0]
         rot = random.randint(1,10)
         meteor = objects.Meteor(type, color, pos, vel, rot)
-        self.collideSprites.add(meteor)
         self.meteorSprites.add(meteor)
         # print(type, color, pos, vel)
         self.lastMeteorAdded = pygame.time.get_ticks()
