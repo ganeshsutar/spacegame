@@ -7,7 +7,7 @@ import vector
 
 vec = vector.Vec2d
 
-laserImage = './assets/redux/PNG/Lasers/laserRed07.png'
+laserImage = './assets/redux/PNG/Lasers/laserRed01.png'
 
 class Laser(pygame.sprite.Sprite):
     def __init__(self, pos, vel):

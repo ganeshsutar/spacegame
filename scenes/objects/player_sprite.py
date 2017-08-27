@@ -3,12 +3,13 @@ Main Player
 """
 import pygame
 import vector
-from laser import Laser
+from laser_sprite import Laser
 import threading
 
-PLAYER_ACC = 0.6
+PLAYER_ACC = 3
 PLAYER_FRICTION = 0.12
-PLAYER_FIRE_RATE = 100
+PLAYER_FIRE_RATE = 50
+PLAYER_LASER_VEL = (0, -40)
 FPS = 60.0
 
 vec = vector.Vec2d
@@ -67,8 +68,8 @@ class PlayerSprite(pygame.sprite.Sprite):
         currentTime = pygame.time.get_ticks()
         if (currentTime - self.lastFire) < PLAYER_FIRE_RATE:
             return
-        laserLeft = Laser((self.pos.x-20, self.pos.y-20), (0, -10))
-        laserRight = Laser((self.pos.x+20, self.pos.y-20), (0, -10))
+        laserLeft = Laser((self.pos.x-20, self.pos.y-20), PLAYER_LASER_VEL)
+        laserRight = Laser((self.pos.x+20, self.pos.y-20), PLAYER_LASER_VEL)
         self.collideSprite.add(laserLeft)
         self.collideSprite.add(laserRight)
         self.playerAssets.fireSound.play()
@@ -85,7 +86,7 @@ class PlayerSprite(pygame.sprite.Sprite):
             self.acc.y = -PLAYER_ACC
         if keys[pygame.K_DOWN]:
             self.acc.y = PLAYER_ACC
-        if keys[pygame.K_b]:
+        if keys[pygame.K_SPACE]:
             # print('Total Sprites: %d' % (len(self.collideSprite)))
             self.fire()
 

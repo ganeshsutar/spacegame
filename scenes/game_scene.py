@@ -82,6 +82,7 @@ class GameScene(BaseScene):
         self.visualSprites.draw(screen)
 
     def update(self, timeDelta):
+        self.backgroundSprites.update()
         self.meteorSprites.update()
         self.bulletSprites.update()
         self.explosionSprites.update()

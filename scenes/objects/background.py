@@ -3,24 +3,30 @@ Sprite that holds background
 """
 
 import pygame
+from vector import Vec2d
+vec = Vec2d
 
 class BackgroundSprite(pygame.sprite.Sprite):
-    def __init__(self, fill = (255,255,255), image=''):
+    def __init__(self, image):
         pygame.sprite.Sprite.__init__(self)
-        screenSize = pygame.display.get_surface().get_size()
-        self.image = pygame.Surface(screenSize)
+        self.screenSize = pygame.display.get_surface().get_size()
+        self.backgroundImage = pygame.image.load(image)
+        self.imageSize = self.backgroundImage.get_size()
+        self.image = pygame.Surface(self.screenSize)
         self.rect = self.image.get_rect()
-        if image != '':
-            self.setImage(image, screenSize)
-        else:
-            self.setFill(fill)
+        self.pos = vec(0, -2*self.imageSize[1])
+        self.vel = vec(0,2)
+        self.updateImage()
 
-    def setImage(self, image, screenSize):
-        image = pygame.image.load(image)
-        imageSize = image.get_size()
-        for x in range(screenSize[0]/imageSize[0] + 1):
-            for y in range(screenSize[1]/imageSize[1] + 1):
-                self.image.blit(image, (x*imageSize[0],y*imageSize[1]))
-    
-    def setFill(self, fill):
-        self.image.fill(fill)
+    def updateImage(self):
+        self.image.fill((0,0,0))
+        for x in range(self.screenSize[0]/self.imageSize[0] + 1):
+            for y in range(-2, self.screenSize[1]/self.imageSize[1] + 3):
+                self.image.blit(self.backgroundImage,
+                    (self.pos.x + x*self.imageSize[0],self.pos.y + y*self.imageSize[1]))
+
+    def update(self):
+        self.pos += self.vel
+        if self.pos.y > -self.imageSize[1]:
+            self.pos = vec(0, -2 * self.imageSize[1])
+        self.updateImage()
