@@ -7,7 +7,7 @@ from vector import Vec2d
 
 vec = Vec2d
 basePath = './assets/smokeParticleAssets/PNG/%s/%s%02d.png'
-explosionBlackFiles = [basePath % ('Black Smoke', 'blackSmoke', i) for i in range(12)]
+explosionBlackFiles = [basePath % ('BlackSmoke', 'blackSmoke', i) for i in range(12)]
 explosionGoldFiles = [basePath % ('Explosion', 'explosion', i) for i in range(9)]
 explosionFlashFiles = [basePath % ('Flash', 'flash', i) for i in range(9)]
 

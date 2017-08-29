@@ -24,14 +24,6 @@ def sign(x):
         return -1
     return 1
 
-def findCollidePoint(sprite1, sprite2):
-    x1, y1 = sprite1.rect.center
-    r1 = sprite1.rect.width/2
-    x2, y2 = sprite2.rect.center
-    r2 = sprite2.rect.width/2
-    d = r1+r2
-    return ((r2*x1+r1*x2)/d, (r2*y1 + r1*y2)/d)
-
 class GameScene(BaseScene):
     def __init__(self):
         self.screenSize = pygame.display.get_surface().get_size()
@@ -92,12 +84,10 @@ class GameScene(BaseScene):
         if len(collidedSprites) > 0:
             self.player.blinkShield()
             for sprite in collidedSprites:
-                pos = findCollidePoint(self.player, sprite)
-                pointSprite = objects.ExplosionSprite(pos)
+                pointSprite = objects.ExplosionSprite(sprite.rect.center)
                 self.explosionSprites.add(pointSprite)
         collidedSprites = pygame.sprite.groupcollide(self.meteorSprites, self.bulletSprites, True, True, pygame.sprite.collide_circle)
         for key, value in collidedSprites.iteritems():
-            pos = findCollidePoint(key, value[0])
             pointSprite = objects.ExplosionSprite(key.pos, size=SIZES[key.type[:-1]], vel=key.vel)
             self.explosionSprites.add(pointSprite)
             add_score = 10 * len(value)
@@ -110,12 +100,9 @@ class GameScene(BaseScene):
 
         pos = (random.randint(-200, screenSize[1]+200), random.randint(-200, -100))
         vel = (sign(screenSize[0]/2-pos[0]) * (random.randint(0, 5)), random.randint(0, 10))
-        # pos = (100, 100)
-        # vel = (0, 5)
         type = random.sample(meteorTypes, 1)[0]
         color = random.sample(meteorColors, 1)[0]
         rot = random.randint(1,10)
         meteor = objects.Meteor(type, color, pos, vel, rot)
         self.meteorSprites.add(meteor)
-        # print(type, color, pos, vel)
         self.lastMeteorAdded = pygame.time.get_ticks()
