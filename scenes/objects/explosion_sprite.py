@@ -3,7 +3,7 @@ Explosion Sprite for the game
 """
 
 import pygame
-from vector import Vec2d
+from .vector import Vec2d
 
 vec = Vec2d
 basePath = './assets/smokeParticleAssets/PNG/%s/%s%02d.png'
@@ -20,11 +20,11 @@ RATE = 50
 def loadExplosionImages():
     global explosionGold, explosionBlack, explosionFlash
     if explosionGold == None:
-        explosionGold = map(lambda x: pygame.image.load(x).convert_alpha(), explosionGoldFiles)
+        explosionGold = list(map(lambda x: pygame.image.load(x).convert_alpha(), explosionGoldFiles))
     if explosionBlack == None:
-        explosionBlack = map(lambda x: pygame.image.load(x).convert_alpha(), explosionBlackFiles)
+        explosionBlack = list(map(lambda x: pygame.image.load(x).convert_alpha(), explosionBlackFiles))
     if explosionFlash == None:
-        explosionFlash = map(lambda x: pygame.image.load(x).convert_alpha(), explosionFlashFiles)
+        explosionFlash = list(map(lambda x: pygame.image.load(x).convert_alpha(), explosionFlashFiles))
 
 
 class ExplosionSprite(pygame.sprite.Sprite):

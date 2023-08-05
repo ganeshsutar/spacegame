@@ -3,9 +3,9 @@ Main Game scene
 """
 
 import pygame
-import objects
+import scenes.objects as objects
 import random
-from base_scene import BaseScene
+from .base_scene import BaseScene
 from pygame.locals import *
 
 meteorTypes = ['big1', 'big2', 'big3', 'big4', 'med1', 'med2', 'small1', 'small2', 'tiny1', 'tiny2']
@@ -87,7 +87,7 @@ class GameScene(BaseScene):
                 pointSprite = objects.ExplosionSprite(sprite.rect.center)
                 self.explosionSprites.add(pointSprite)
         collidedSprites = pygame.sprite.groupcollide(self.meteorSprites, self.bulletSprites, True, True, pygame.sprite.collide_circle)
-        for key, value in collidedSprites.iteritems():
+        for key, value in collidedSprites.items():
             pointSprite = objects.ExplosionSprite(key.pos, size=SIZES[key.type[:-1]], vel=key.vel)
             self.explosionSprites.add(pointSprite)
             add_score = 10 * len(value)

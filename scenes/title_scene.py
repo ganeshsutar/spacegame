@@ -2,8 +2,8 @@
 Title Scene for the game
 """
 
-from base_scene import BaseScene
-from objects import *
+from .base_scene import BaseScene
+from .objects import *
 import pygame
 from pygame.locals import *
 

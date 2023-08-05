@@ -2,8 +2,8 @@
 Main Player
 """
 import pygame
-import vector
-from laser_sprite import Laser
+from .vector import Vec2d
+from .laser_sprite import Laser
 import threading
 
 PLAYER_ACC = 3
@@ -12,7 +12,7 @@ PLAYER_FIRE_RATE = 50
 PLAYER_LASER_VEL = (0, -40)
 FPS = 60.0
 
-vec = vector.Vec2d
+vec = Vec2d
 
 class PlayerAssets:
     def __init__(self, i, color):

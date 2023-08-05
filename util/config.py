@@ -2,7 +2,7 @@
 Hold the configuration
 """
 
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 from ast import literal_eval
 
 def loadConfiguration(filename):
